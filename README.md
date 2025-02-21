@@ -6,6 +6,8 @@
 
 A modern, user-friendly alternative to Android File Transfer for macOS users, built with Flutter.
 
+> This is my fun project for experimenting with process_run in Flutter, exploring how to create native-like experiences while learning and having fun with the technology! 🚀
+
 ## Why This Project?
 
 The current [Android File Transfer](https://www.android.com/filetransfer/) for macOS has several limitations and issues:
@@ -21,18 +23,18 @@ The current [Android File Transfer](https://www.android.com/filetransfer/) for m
 ## Features Roadmap
 
 ### Phase 1: Core Functionality
-- [ ] Basic file transfer capabilities
+- [x] Basic file transfer capabilities
 - [ ] MTP protocol implementation
-- [ ] Device detection and connection
-- [ ] File system navigation
-- [ ] Basic file operations (copy, move, delete)
+- [x] Device detection and connection
+- [x] File system navigation
+- [x] Basic file operations (copy, move, delete)
 
 ### Phase 2: User Experience
-- [ ] Modern, intuitive UI design
+- [x] Modern, intuitive UI design
 - [ ] Drag-and-drop support
 - [ ] Progress indicators for file transfers
 - [ ] Dark/Light theme support
-- [ ] File preview capabilities
+- [x] File preview capabilities
 
 ### Phase 3: Advanced Features
 - [ ] Multiple device support
