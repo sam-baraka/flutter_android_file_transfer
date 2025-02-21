@@ -59,7 +59,7 @@ The current [Android File Transfer](https://www.android.com/filetransfer/) for m
 ### Installation
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/flutter_android_file_transfer.git
+git clone https://github.com/sam-baraka/flutter_android_file_transfer.git
 ```
 
 2. Install dependencies
