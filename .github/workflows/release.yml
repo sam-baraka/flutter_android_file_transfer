@@ -2,9 +2,8 @@ name: Release App
 
 on:
   push:
-    tags:
-      - 'v*' # Trigger on version tags
-
+    branches:
+      - main
 permissions:
   contents: write # Needed for creating releases
   packages: read  # Needed for package dependencies
