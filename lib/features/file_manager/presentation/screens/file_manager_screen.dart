@@ -9,12 +9,14 @@ import '../providers/file_manager_provider.dart';
 import '../providers/device_monitor_provider.dart';
 import '../providers/ui_state_providers.dart';
 import '../widgets/file_manager_widgets.dart';
+import '../widgets/animated_widgets.dart';
 import '../utils/file_utils.dart';
 import '../widgets/connection_guide_dialog.dart';
 import '../widgets/file_preview_dialog.dart';
 import '../../../../core/services/adb_service.dart';
 import 'package:path/path.dart' as path;
 import '../../domain/models/file_item.dart';
+import '../../../../main.dart'; // Add this import for themeModeProvider
 
 // Selected file provider
 final selectedFileProvider = StateProvider<FileItem?>((ref) => null);
@@ -71,15 +73,20 @@ class FileManagerAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final themeMode = ref.watch(themeModeProvider);
+
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        color: colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-        ),
+        ],
       ),
       child: Row(
         children: [
@@ -87,22 +94,50 @@ class FileManagerAppBar extends ConsumerWidget {
           Text(
             'File Manager',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
+              color: colorScheme.primary,
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () => showConnectionGuide(context),
-            tooltip: 'Connection Guide',
+          ScaleOnHover(
+            child: IconButton(
+              icon: Icon(
+                themeMode == ThemeMode.dark
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
+                color: colorScheme.primary,
+              ),
+              onPressed: () {
+                ref.read(themeModeProvider.notifier).state =
+                    themeMode == ThemeMode.dark
+                        ? ThemeMode.light
+                        : ThemeMode.dark;
+              },
+              tooltip: 'Toggle Theme',
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () =>
-                ref.read(fileManagerNotifierProvider.notifier).refreshDevices(),
-            tooltip: 'Refresh Devices',
+          ScaleOnHover(
+            child: IconButton(
+              icon: Icon(
+                Icons.help_outline,
+                color: colorScheme.primary,
+              ),
+              onPressed: () => showConnectionGuide(context),
+              tooltip: 'Connection Guide',
+            ),
+          ),
+          ScaleOnHover(
+            child: IconButton(
+              icon: Icon(
+                Icons.refresh,
+                color: colorScheme.primary,
+              ),
+              onPressed: () => ref
+                  .read(fileManagerNotifierProvider.notifier)
+                  .refreshDevices(),
+              tooltip: 'Refresh Devices',
+            ),
           ),
           const SizedBox(width: 16),
         ],
@@ -187,35 +222,55 @@ class FileListTile extends ConsumerWidget {
     final state = ref.watch(fileManagerNotifierProvider);
     final selectedFile = ref.watch(selectedFileProvider);
     final isSelected = selectedFile == file;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return ListTile(
-      selected: isSelected,
-      leading: FileIconWidget(file: file),
+    return AnimatedListTile(
+      isSelected: isSelected,
+      leading: ScaleOnHover(
+        scale: 1.1,
+        child: FileIconWidget(file: file),
+      ),
       title: Text(
         file.name,
-        style: const TextStyle(fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+        ),
       ),
       subtitle: Text(
         '${file.permissions} - ${file.owner}:${file.group} - ${formatSize(file.size)}',
         style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+          color: colorScheme.onSurface.withOpacity(0.7),
         ),
       ),
       trailing: file.isDirectory
-          ? const Icon(Icons.chevron_right)
+          ? Icon(
+              Icons.chevron_right,
+              color: colorScheme.primary.withOpacity(0.7),
+            )
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (ref.read(adbServiceProvider).isMediaFile(file.name))
-                  IconButton(
-                    icon: const Icon(Icons.visibility),
-                    onPressed: () =>
-                        showPreview(context, file, state.selectedDevice),
+                  ScaleOnHover(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.visibility,
+                        color: colorScheme.primary,
+                      ),
+                      onPressed: () =>
+                          showPreview(context, file, state.selectedDevice),
+                    ),
                   ),
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () =>
-                      showFileOptions(context, file, state.selectedDevice),
+                ScaleOnHover(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: colorScheme.primary,
+                    ),
+                    onPressed: () =>
+                        showFileOptions(context, file, state.selectedDevice),
+                  ),
                 ),
               ],
             ),
