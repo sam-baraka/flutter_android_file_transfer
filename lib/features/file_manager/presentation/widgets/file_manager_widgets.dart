@@ -10,6 +10,8 @@ import '../providers/ui_state_providers.dart';
 import '../utils/file_utils.dart';
 import '../../../../core/services/adb_service.dart';
 import 'package:path/path.dart' as path;
+import 'animated_widgets.dart';
+import 'connection_guide_dialog.dart';
 
 class FileManagerSidebar extends ConsumerWidget {
   const FileManagerSidebar({super.key});
@@ -329,38 +331,68 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.devices_other,
-              size: 64,
-              color: colorScheme.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No devices found',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: colorScheme.onBackground,
-                    fontWeight: FontWeight.w600,
+
+    return Center(
+      child: ScaleOnHover(
+        scale: 1.02,
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.devices_other,
+                size: 64,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No Device Connected',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Connect your Android device via USB\nand enable USB debugging',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: colorScheme.onSurface.withOpacity(0.7),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.help_outline),
+                label: const Text('Connection Guide'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
                   ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Connect a device via USB or wireless debugging',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onBackground.withOpacity(0.7),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => showConnectionGuide(context),
-              icon: const Icon(Icons.help_outline),
-              label: const Text('How to Connect a Device'),
-            ),
-          ],
+                ),
+                onPressed: () => showConnectionGuide(context),
+              ),
+            ],
+          ),
         ),
       ),
     );
