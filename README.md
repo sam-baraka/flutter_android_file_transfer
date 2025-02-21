@@ -80,7 +80,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License with an emphasis on educational use. It is freely available for:
+- 📚 Academic research and study
+- 🎓 Teaching and classroom use
+- 💡 Personal learning and skill development
+- 🌟 Open source learning and contribution
+
+See the [LICENSE](LICENSE) file for the full license text.
 
 ## Acknowledgments
 
