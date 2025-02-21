@@ -2,8 +2,9 @@ name: Release App
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*' # Only trigger on version tags
+
 permissions:
   contents: write # Needed for creating releases
   packages: read  # Needed for package dependencies
@@ -28,6 +29,16 @@ jobs:
             echo "3. Add the token to your repository's secrets as GITHUB_TOKEN"
             exit 1
           fi
+
+      - name: Get version
+        id: get_version
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version is $VERSION"
         
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -61,7 +72,7 @@ jobs:
           echo "Found app bundle: $APP_NAME"
           
           APP_PATH="build/macos/Build/Products/Release/$APP_NAME"
-          DMG_NAME="${APP_NAME%.app}.dmg"
+          DMG_NAME="${APP_NAME%.app}-${{ env.VERSION }}.dmg"
           DMG_PATH="$DMG_NAME"
           TEMP_PATH="$(mktemp -d)/Flutter Android File Transfer"
           
@@ -101,24 +112,20 @@ jobs:
           # Store DMG name for later use
           echo "DMG_NAME=$DMG_NAME" >> $GITHUB_ENV
 
-      - name: Get version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GTH_TKN }}
         with:
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
           draft: false
           prerelease: false
           files: |
             ${{ env.DMG_NAME }}
           body: |
-            ## Flutter Android File Transfer for macOS ${{ env.VERSION }}
+            ## Flutter Android File Transfer v${{ env.VERSION }}
             
             A modern, user-friendly alternative to Android File Transfer for macOS users, built with Flutter.
             
@@ -140,6 +147,6 @@ jobs:
 
       - name: Verify Release
         run: |
-          echo "✅ Release ${{ env.VERSION }} created successfully"
+          echo "✅ Release v${{ env.VERSION }} created successfully"
           echo "You can find the release at:"
-          echo "https://github.com/${{ github.repository }}/releases/tag/${{ env.VERSION }}" 
+          echo "https://github.com/${{ github.repository }}/releases/tag/v${{ env.VERSION }}" 
