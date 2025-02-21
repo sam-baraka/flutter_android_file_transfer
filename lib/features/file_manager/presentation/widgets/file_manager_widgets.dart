@@ -12,6 +12,7 @@ import '../../../../core/services/adb_service.dart';
 import 'package:path/path.dart' as path;
 import 'animated_widgets.dart';
 import 'connection_guide_dialog.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
 
 class FileManagerSidebar extends ConsumerWidget {
   const FileManagerSidebar({super.key});
@@ -114,10 +115,15 @@ class FileManagerSidebar extends ConsumerWidget {
             onTap: () => _selectFileType(ref, FileType.downloads),
           ),
           const Spacer(),
-          SidebarItem(
-            icon: Icons.settings_outlined,
-            label: 'Settings',
-            onTap: () {},
+          ScaleOnHover(
+            child: SidebarItem(
+              icon: Icons.settings_outlined,
+              label: 'Settings',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              ),
+            ),
           ),
         ],
       ),
