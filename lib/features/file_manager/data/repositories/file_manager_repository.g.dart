@@ -7,7 +7,7 @@ part of 'file_manager_repository.dart';
 // **************************************************************************
 
 String _$fileManagerRepositoryHash() =>
-    r'f712ad9bb78a4e1234fd96c5e94c156ea7137a86';
+    r'6a346669234fbd548b0cd48e9a37d38c29a7968b';
 
 /// See also [FileManagerRepository].
 @ProviderFor(FileManagerRepository)

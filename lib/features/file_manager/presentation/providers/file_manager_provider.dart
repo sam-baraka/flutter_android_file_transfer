@@ -3,6 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../data/repositories/file_manager_repository.dart';
 import '../../domain/models/file_item.dart';
+import 'ui_state_providers.dart';
+import 'package:path/path.dart' as path;
 
 part 'file_manager_provider.freezed.dart';
 part 'file_manager_provider.g.dart';
@@ -16,6 +18,9 @@ class FileManagerState with _$FileManagerState {
     @Default('') String selectedDevice,
     @Default('') String error,
     @Default(false) bool isLoading,
+    @Default(false) bool hasMore,
+    @Default(0) int currentPage,
+    @Default(50) int itemsPerPage,
   }) = _FileManagerState;
 }
 
@@ -27,6 +32,19 @@ class FileManagerNotifier extends _$FileManagerNotifier {
   FileManagerState build() {
     _repository = ref.read(fileManagerRepositoryProvider);
     return const FileManagerState();
+  }
+
+  List<FileItem> _filterFilesByType(List<FileItem> files, FileType fileType) {
+    if (fileType == FileType.all) return files;
+    if (fileType == FileType.folders)
+      return files.where((file) => file.isDirectory).toList();
+
+    final extensions = fileTypeMatchers[fileType] ?? [];
+    return files.where((file) {
+      if (fileType == FileType.folders && file.isDirectory) return true;
+      final extension = path.extension(file.name).toLowerCase();
+      return extensions.contains(extension);
+    }).toList();
   }
 
   Future<void> refreshDevices() async {
@@ -45,6 +63,7 @@ class FileManagerNotifier extends _$FileManagerNotifier {
       selectedDevice: deviceId,
       currentPath: '/storage/emulated/0',
       files: [],
+      currentPage: 0,
     );
     listFiles('/storage/emulated/0');
   }
@@ -52,17 +71,62 @@ class FileManagerNotifier extends _$FileManagerNotifier {
   Future<void> listFiles(String path) async {
     if (state.selectedDevice.isEmpty) return;
 
-    state = state.copyWith(isLoading: true, error: '');
+    state = state.copyWith(
+      isLoading: true,
+      error: '',
+      currentPage: 0,
+      files: [],
+    );
 
-    final result = await _repository.listFiles(state.selectedDevice, path);
+    final result = await _repository.listFiles(
+      state.selectedDevice,
+      path,
+      skip: 0,
+      take: state.itemsPerPage,
+    );
 
     result.fold(
       (error) => state = state.copyWith(error: error, isLoading: false),
-      (files) => state = state.copyWith(
-        files: files,
-        currentPath: path,
-        isLoading: false,
-      ),
+      (filesResult) {
+        final fileType = ref.read(selectedFileTypeProvider);
+        final filteredFiles = _filterFilesByType(filesResult.files, fileType);
+
+        state = state.copyWith(
+          files: filteredFiles,
+          currentPath: path,
+          isLoading: false,
+          hasMore: filesResult.hasMore,
+        );
+      },
+    );
+  }
+
+  Future<void> loadMore() async {
+    if (state.isLoading || !state.hasMore) return;
+
+    state = state.copyWith(isLoading: true);
+
+    final nextPage = state.currentPage + 1;
+    final result = await _repository.listFiles(
+      state.selectedDevice,
+      state.currentPath,
+      skip: nextPage * state.itemsPerPage,
+      take: state.itemsPerPage,
+    );
+
+    result.fold(
+      (error) => state = state.copyWith(error: error, isLoading: false),
+      (filesResult) {
+        final fileType = ref.read(selectedFileTypeProvider);
+        final filteredFiles = _filterFilesByType(filesResult.files, fileType);
+
+        state = state.copyWith(
+          files: [...state.files, ...filteredFiles],
+          currentPage: nextPage,
+          hasMore: filesResult.hasMore,
+          isLoading: false,
+        );
+      },
     );
   }
 

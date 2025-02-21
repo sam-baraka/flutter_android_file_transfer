@@ -22,6 +22,9 @@ mixin _$FileManagerState {
   String get selectedDevice => throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  bool get hasMore => throw _privateConstructorUsedError;
+  int get currentPage => throw _privateConstructorUsedError;
+  int get itemsPerPage => throw _privateConstructorUsedError;
 
   /// Create a copy of FileManagerState
   /// with the given fields replaced by the non-null parameter values.
@@ -42,7 +45,10 @@ abstract class $FileManagerStateCopyWith<$Res> {
       String currentPath,
       String selectedDevice,
       String error,
-      bool isLoading});
+      bool isLoading,
+      bool hasMore,
+      int currentPage,
+      int itemsPerPage});
 }
 
 /// @nodoc
@@ -66,6 +72,9 @@ class _$FileManagerStateCopyWithImpl<$Res, $Val extends FileManagerState>
     Object? selectedDevice = null,
     Object? error = null,
     Object? isLoading = null,
+    Object? hasMore = null,
+    Object? currentPage = null,
+    Object? itemsPerPage = null,
   }) {
     return _then(_value.copyWith(
       devices: null == devices
@@ -92,6 +101,18 @@ class _$FileManagerStateCopyWithImpl<$Res, $Val extends FileManagerState>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      hasMore: null == hasMore
+          ? _value.hasMore
+          : hasMore // ignore: cast_nullable_to_non_nullable
+              as bool,
+      currentPage: null == currentPage
+          ? _value.currentPage
+          : currentPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      itemsPerPage: null == itemsPerPage
+          ? _value.itemsPerPage
+          : itemsPerPage // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -110,7 +131,10 @@ abstract class _$$FileManagerStateImplCopyWith<$Res>
       String currentPath,
       String selectedDevice,
       String error,
-      bool isLoading});
+      bool isLoading,
+      bool hasMore,
+      int currentPage,
+      int itemsPerPage});
 }
 
 /// @nodoc
@@ -132,6 +156,9 @@ class __$$FileManagerStateImplCopyWithImpl<$Res>
     Object? selectedDevice = null,
     Object? error = null,
     Object? isLoading = null,
+    Object? hasMore = null,
+    Object? currentPage = null,
+    Object? itemsPerPage = null,
   }) {
     return _then(_$FileManagerStateImpl(
       devices: null == devices
@@ -158,6 +185,18 @@ class __$$FileManagerStateImplCopyWithImpl<$Res>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      hasMore: null == hasMore
+          ? _value.hasMore
+          : hasMore // ignore: cast_nullable_to_non_nullable
+              as bool,
+      currentPage: null == currentPage
+          ? _value.currentPage
+          : currentPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      itemsPerPage: null == itemsPerPage
+          ? _value.itemsPerPage
+          : itemsPerPage // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -171,7 +210,10 @@ class _$FileManagerStateImpl implements _FileManagerState {
       this.currentPath = '',
       this.selectedDevice = '',
       this.error = '',
-      this.isLoading = false})
+      this.isLoading = false,
+      this.hasMore = false,
+      this.currentPage = 0,
+      this.itemsPerPage = 50})
       : _devices = devices,
         _files = files;
 
@@ -205,10 +247,19 @@ class _$FileManagerStateImpl implements _FileManagerState {
   @override
   @JsonKey()
   final bool isLoading;
+  @override
+  @JsonKey()
+  final bool hasMore;
+  @override
+  @JsonKey()
+  final int currentPage;
+  @override
+  @JsonKey()
+  final int itemsPerPage;
 
   @override
   String toString() {
-    return 'FileManagerState(devices: $devices, files: $files, currentPath: $currentPath, selectedDevice: $selectedDevice, error: $error, isLoading: $isLoading)';
+    return 'FileManagerState(devices: $devices, files: $files, currentPath: $currentPath, selectedDevice: $selectedDevice, error: $error, isLoading: $isLoading, hasMore: $hasMore, currentPage: $currentPage, itemsPerPage: $itemsPerPage)';
   }
 
   @override
@@ -224,7 +275,12 @@ class _$FileManagerStateImpl implements _FileManagerState {
                 other.selectedDevice == selectedDevice) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading));
+                other.isLoading == isLoading) &&
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
+            (identical(other.currentPage, currentPage) ||
+                other.currentPage == currentPage) &&
+            (identical(other.itemsPerPage, itemsPerPage) ||
+                other.itemsPerPage == itemsPerPage));
   }
 
   @override
@@ -235,7 +291,10 @@ class _$FileManagerStateImpl implements _FileManagerState {
       currentPath,
       selectedDevice,
       error,
-      isLoading);
+      isLoading,
+      hasMore,
+      currentPage,
+      itemsPerPage);
 
   /// Create a copy of FileManagerState
   /// with the given fields replaced by the non-null parameter values.
@@ -254,7 +313,10 @@ abstract class _FileManagerState implements FileManagerState {
       final String currentPath,
       final String selectedDevice,
       final String error,
-      final bool isLoading}) = _$FileManagerStateImpl;
+      final bool isLoading,
+      final bool hasMore,
+      final int currentPage,
+      final int itemsPerPage}) = _$FileManagerStateImpl;
 
   @override
   List<String> get devices;
@@ -268,6 +330,12 @@ abstract class _FileManagerState implements FileManagerState {
   String get error;
   @override
   bool get isLoading;
+  @override
+  bool get hasMore;
+  @override
+  int get currentPage;
+  @override
+  int get itemsPerPage;
 
   /// Create a copy of FileManagerState
   /// with the given fields replaced by the non-null parameter values.
